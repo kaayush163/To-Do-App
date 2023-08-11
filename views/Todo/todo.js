@@ -1,26 +1,26 @@
-// let url = "http://localhost:3000/todo";
+
 let url = "http://localhost:3000/todo";
 let url2 = "http://localhost:3000/todocompleted";
 //const btn = document.querySelector('.addTask > button');
 const form=document.getElementById('form');
 const text = document.getElementById('text');
 
+let token =localStorage.getItem('token');
 form.addEventListener('submit', addList);
 const notCompleted = document.getElementById('notCompleted');
 const Completed = document.getElementsByTagName('Completed');
 console.log(Completed);
-//btn.addEventListener('click', addList);
 
 window.addEventListener('DOMContentLoaded',onload);
 async function onload(e)
 {
-    let res=await axios.get(`${url}/get-todo`)
-    let sec=await axios.get(`${url2}/get-completed`);
+    let res=await axios.get(`${url}/get-todo`,{headers:{"Authorization":token}})
+    let sec=await axios.get(`${url2}/get-completed`,{headers:{"Authorization":token}});
     try
     {
         console.log(res);
         console.log(res.data);
-        res.data.forEach((key)=>  //this key here is working ame like i in c++
+        res.data.forEach((key)=>  //this key here is working same like i in c++
         {
             console.log(key);   // this is passing as data[i] data[0],data[1]
             onScreen(key);
@@ -51,7 +51,7 @@ async function addList(e){
             text : text.value,
         }
         console.log(activity);
-        let res=await axios.post(`${url}/post-todo`,activity) //on submit new and fresh form post request will be sent
+        let res=await axios.post(`${url}/post-todo`,activity,{headers:{"Authorization":token}}) //on submit new and fresh form post request will be sent
         console.log(res);
         onScreen(res.data);    //dont worry this will conatin the id 
     }
@@ -83,7 +83,7 @@ async function onScreen(activity)
             let child = document.getElementById(activity.id);            ////I will remeber this how much to struggle to get this correct
             console.log(child);
             parent.removeChild(child);
-            await axios.get(`${url}/delete-todo/${activity.id}`)
+            await axios.get(`${url}/delete-todo/${activity.id}`,{headers:{"Authorization":token}})
             console.log(activity);
 
             done(activity);
@@ -91,7 +91,7 @@ async function onScreen(activity)
             // parent.remove();
          });
 		delBtn.addEventListener('click', async() => {
-          await axios.get(`${url}/delete-todo/${activity.id}`);
+          await axios.get(`${url}/delete-todo/${activity.id}`,{headers:{"Authorization":token}});
 		  let child = document.getElementById(activity.id);
           console.log(child);
 		  child.remove();
@@ -102,8 +102,7 @@ async function done(data){
     console.log(data.id);
     try{
         
-        await axios.post(`${url2}/post-completed`, data); 
-        //await axios.post(`${url2}/edit-completed/${data.id}`, data);
+        await axios.post(`${url2}/post-completed`, data,{headers:{"Authorization":token}}); 
         displaycompleted(data);
     }
     catch(err) {
@@ -116,16 +115,12 @@ function displaycompleted(data){
         console.log(parent);
         
         const newLi = document.createElement('li');	
-        //const checkBtn = document.createElement('button');
         const delBtn = document.createElement('button');
-        //checkBtn.innerHTML = '<i class="fa fa-check"></i>';
         delBtn.innerHTML = '<i class="fa fa-trash"></i>';
         newLi.setAttribute("id", data.id);
         newLi.textContent = data.text;
         text.value = '';
-        //notCompleted.appendChild(newLi);//
         parent.appendChild(newLi);
-        //newLi.appendChild(checkBtn);
         newLi.appendChild(delBtn);
 
         let child = document.getElementById(data.id);            ////I will remeber this how much to struggle to get this correct
@@ -133,7 +128,7 @@ function displaycompleted(data){
         parent.appendChild(child);
 
         delBtn.addEventListener('click', async() => {
-            await axios.get(`${url2}/delete-completed/${data.id}`);
+            await axios.get(`${url2}/delete-completed/${data.id}`,{headers:{"Authorization":token}});
             let child = document.getElementById(data.id);
             console.log(child);
             child.remove();

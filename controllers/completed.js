@@ -3,11 +3,11 @@ const CompletedTodo = require("../models/completed");
 exports.getCompleted = async (req, res, next) => {
   
    try{
-    const result = await CompletedTodo.findAll();
+    const result = await CompletedTodo.findAll({ where:{ userId:req.user.id }});
       res.status(200).json(result);
    }catch(err) {
-      console.log(err);
-      //res.status(500).json({err:err})
+      // console.log(err);
+      res.status(500).json({err:err})
     };
 };
 
@@ -19,6 +19,7 @@ exports.postCompleted = async (req, res, next) => {
       // const mobile = req.body.mobile;
       const data = await CompletedTodo.create({
         text:text,
+        userId:req.user.id
       });
       res.status(201).json(data);
       // res.status(201).json({ newUserDetail: data });
@@ -35,7 +36,7 @@ exports.postCompleted = async (req, res, next) => {
         {
           text : text,
         },
-        { where: { id: completedId } }
+        { where: { id: completedId , userId: req.user.id} }
       );
       res.status(201).json(data);
     } catch (err) {
@@ -48,7 +49,7 @@ exports.postCompleted = async (req, res, next) => {
       const completedId = req.params.completedId;
       console.log(completedId);
       const todoField = await CompletedTodo.findByPk(completedId);
-      await todoField.destroy();
+      await todoField.destroy({where: {userId:req.user.id}});
       res.status(201).json({ delete: todoField });
     } catch (err) {
       console.error(err);
