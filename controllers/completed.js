@@ -27,24 +27,8 @@ exports.postCompleted = async (req, res, next) => {
       res.status(404).json({ error: err });
     }
   };
-  
-  exports.editCompleted = async (req, res, next) => {
-    try {
-      const completedId = req.params.completedId;    //as same as used in routes
-      const text = req.body.text;
-      const data = await CompletedTodo.update(
-        {
-          text : text,
-        },
-        { where: { id: completedId , userId: req.user.id} }
-      );
-      res.status(201).json(data);
-    } catch (err) {
-      res.status(404).json({ error: err });
-    }
-  };
 
-  exports.deleteCompleted = async (req, res, next) => {
+exports.deleteCompleted = async (req, res, next) => {
     try {
       const completedId = req.params.completedId;
       console.log(completedId);
